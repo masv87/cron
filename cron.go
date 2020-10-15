@@ -278,10 +278,15 @@ func (c *Cron) run() {
 						lock, err := c.locker.Obtain(string(e.ID), sub)
 						if err != nil {
 							c.logger.Error(err, "cannot retrieve lock", "entry", e.ID)
+							e.Prev = e.Next
+							e.Next = e.Schedule.Next(now)
+							c.logger.Error(err, "I am going to break", "entry", e.ID)
 							continue
 						}
 						// It means that we've already have a lock for that job, so, do nothing
 						if lock == nil && err == nil {
+							e.Prev = e.Next
+							e.Next = e.Schedule.Next(now)
 							continue
 						}
 					}
