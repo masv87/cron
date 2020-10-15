@@ -257,9 +257,9 @@ func TestRunningJobTwice(t *testing.T) {
 	wg.Add(2)
 
 	cron := newWithSeconds()
-	cron.AddFunc("0 0 0 1 1 ?", func() {})
-	cron.AddFunc("0 0 0 31 12 ?", func() {})
-	cron.AddFunc("* * * * * ?", func() { wg.Done() })
+	cron.AddFunc("0", "0 0 0 1 1 ?", func() {})
+	cron.AddFunc("1", "0 0 0 31 12 ?", func() {})
+	cron.AddFunc("2", "* * * * * ?", func() { wg.Done() })
 
 	cron.Start()
 	defer cron.Stop()
@@ -276,12 +276,12 @@ func TestRunningMultipleSchedules(t *testing.T) {
 	wg.Add(2)
 
 	cron := newWithSeconds()
-	cron.AddFunc("0 0 0 1 1 ?", func() {})
-	cron.AddFunc("0 0 0 31 12 ?", func() {})
-	cron.AddFunc("* * * * * ?", func() { wg.Done() })
-	cron.Schedule(Every(time.Minute), FuncJob(func() {}))
-	cron.Schedule(Every(time.Second), FuncJob(func() { wg.Done() }))
-	cron.Schedule(Every(time.Hour), FuncJob(func() {}))
+	cron.AddFunc("0", "0 0 0 1 1 ?", func() {})
+	cron.AddFunc("1", "0 0 0 31 12 ?", func() {})
+	cron.AddFunc("2", "* * * * * ?", func() { wg.Done() })
+	cron.Schedule("3", Every(time.Minute), FuncJob(func() {}))
+	cron.Schedule("4", Every(time.Second), FuncJob(func() { wg.Done() }))
+	cron.Schedule("5", Every(time.Hour), FuncJob(func() {}))
 
 	cron.Start()
 	defer cron.Stop()
@@ -438,7 +438,7 @@ func TestJob(t *testing.T) {
 	wg.Add(1)
 
 	cron := newWithSeconds()
-	cron.AddJob("0 0 0 30 Feb ?", testJob{wg, "job0"})
+	cron.AddJob(EntryID("0"), "0 0 0 30 Feb ?", testJob{wg, "job0"})
 	cron.AddJob("0 0 0 1 1 ?", testJob{wg, "job1"})
 	job2, _ := cron.AddJob("* * * * * ?", testJob{wg, "job2"})
 	cron.AddJob("1 0 0 1 1 ?", testJob{wg, "job3"})

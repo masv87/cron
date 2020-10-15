@@ -43,3 +43,10 @@ func WithLogger(logger Logger) Option {
 		c.logger = logger
 	}
 }
+
+// WithLogger uses the provided logger.
+func WithLocker(locker Locker) Option {
+	return func(c *Cron) {
+		c.locker = locker
+	}
+}
