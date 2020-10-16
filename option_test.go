@@ -40,3 +40,29 @@ func TestWithVerboseLogger(t *testing.T) {
 		t.Error("expected to see some actions, got:", out)
 	}
 }
+
+func TestWithLocker(t *testing.T) {
+	var locker = LockerMock{}
+	c := New(WithLocker(locker))
+	if c.locker != locker {
+		t.Error("expected provided locker")
+	}
+}
+
+type LockMock struct {
+}
+
+func (l *LockMock) TTL() (time.Duration, error) {
+	return 0, nil
+}
+
+func (l *LockMock) Release() error {
+	return nil
+}
+
+type LockerMock struct {
+}
+
+func (l LockerMock) Obtain(key string, ttl time.Duration) (Lock, error) {
+	return &LockMock{}, nil
+}

@@ -2,7 +2,6 @@ package cron
 
 import (
 	"context"
-	"fmt"
 	"sort"
 	"sync"
 	"time"
@@ -274,9 +273,8 @@ func (c *Cron) run() {
 					if c.locker != nil {
 						// We're going to block execution until the next exec. time - 500 millisecond
 						duration := e.Schedule.Next(now).Sub(time.Now().Add(time.Millisecond * 500))
-						sub := duration
-						fmt.Printf("ttl  time is %v\n", sub)
-						lock, err := c.locker.Obtain(string(e.ID), sub)
+						c.logger.Info("block gap", "duration", duration)
+						lock, err := c.locker.Obtain(string(e.ID), duration)
 						if err != nil {
 							c.logger.Error(err, "cannot retrieve lock", "entry", e.ID)
 							e.Prev = e.Next
