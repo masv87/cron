@@ -272,8 +272,9 @@ func (c *Cron) run() {
 						break
 					}
 					if c.locker != nil {
-						// Try to obtain lock.
-						sub := e.Next.Sub(time.Now().Add(time.Millisecond * 500))
+						// We're going to block execution until the next exec. time - 500 millisecond
+						duration := e.Schedule.Next(now).Sub(time.Now().Add(time.Millisecond * 500))
+						sub := duration
 						fmt.Printf("ttl  time is %v\n", sub)
 						lock, err := c.locker.Obtain(string(e.ID), sub)
 						if err != nil {
