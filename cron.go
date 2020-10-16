@@ -286,6 +286,7 @@ func (c *Cron) run() {
 						if lock == nil && err == nil {
 							e.Prev = e.Next
 							e.Next = e.Schedule.Next(now)
+							c.logger.Info("Entry is blocked", "entry", e.ID)
 							continue
 						}
 					}
